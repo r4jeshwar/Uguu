@@ -25,6 +25,11 @@ define('UGUU_DB_USER', 'NULL');
 /* @param string UGUU_DB_PASS Database password */
 define('UGUU_DB_PASS', 'NULL');
 
+/* @param string UGUU_ADMIN_NAME username */
+define('UGUU_ADMIN_USER', 'admin');
+/* @param string UGUU_ADMIN_PASS password as hash*/
+define('UGUU_ADMIN_PASS', '$2y$12$.NHW25QBD/XPSYkNe6tEtObwEXsJeiQIo3xWidU.21ECkFMK.SE8C%');
+
 /** Log IP of uploads */
 define('LOG_IP', 'no');
 
