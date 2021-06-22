@@ -31,7 +31,7 @@ define('UGUU_ADMIN_USER', 'admin');
 define('UGUU_ADMIN_PASS', '$2y$12$.NHW25QBD/XPSYkNe6tEtObwEXsJeiQIo3xWidU.21ECkFMK.SE8C%');
 
 /** Log IP of uploads */
-define('LOG_IP', 'no');
+define('LOG_IP', 'false');
 
 /** Anti-dupe files */
 define('UGUU_DUPE', 'false');
