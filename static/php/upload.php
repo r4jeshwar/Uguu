@@ -102,26 +102,6 @@ function uploadFile($file)
         throw new UploadException($file->error);
     }
 
-    // Check if a file with the same hash and size (a file which is the same)
-    // does already exist in the database; if it does, return the proper link
-    // and data. PHP deletes the temporary file just uploaded automatically.
-    if(UGUU_DUPE == 'true'){
-    $q = $db->prepare('SELECT filename, COUNT(*) AS count FROM files WHERE hash = (:hash) '.
-                      'AND size = (:size)');
-    $q->bindValue(':hash', $file->getSha1(), PDO::PARAM_STR);
-    $q->bindValue(':size', $file->size, PDO::PARAM_INT);
-    $q->execute();
-    $result = $q->fetch();
-    if ($result['count'] > 0) {
-        return [
-            'hash' => $file->getSha1(),
-            'name' => $file->name,
-            'url' => POMF_URL.rawurlencode($result['filename']),
-            'size' => $file->size,
-        ];
-    }
-}
-
     // Generate a name for the file
     $newname = generateName($file);
 
@@ -150,7 +130,7 @@ function uploadFile($file)
     }
 
     // Add it to the database
-    if(UGUU_LOG_IP == 'true'){
+    if(LOG_IP == 'yes'){
         $q = $db->prepare('INSERT INTO files (hash, originalname, filename, size, date, ip) VALUES (:hash, :orig, :name, :size, :date, :ip)');
     }else{
         $ip = '0';

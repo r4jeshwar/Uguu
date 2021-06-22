@@ -18,7 +18,7 @@
 	"max_upload_size": 128,
 	"production": false,
 	"siteName": "SITENAME",
-	"siteUrl": "http://localhost",
+	"siteUrl": "https://yoursite.com",
 	"abuseContact": "abuse@example.com",
 	"infoContact": "info@example.com",
 	"ServerCountryLocation": "Sweden",
