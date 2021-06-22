@@ -24,12 +24,8 @@ function generateName($file)
     // We start at N retries, and --N until we give up
     $tries = UGUU_FILES_RETRIES;
     $length = UGUU_FILES_LENGTH;
-    //Get EXT
-    $ext = pathinfo($file->name, PATHINFO_EXTENSION);
-    //Get mime
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $type_mime = finfo_file($finfo, $file->tempfile);
-    finfo_close($finfo);
+
+    $ext = $file->getExt();
 
     // Check if extension is a double-dot extension and, if true, override $ext
     $revname = strrev($file->name);
@@ -61,7 +57,7 @@ function generateName($file)
         }
 
        //Check if mime is blacklisted
-       if (in_array($type_mime, unserialize(CONFIG_BLOCKED_MIME))) {
+       if (in_array($file->getMime(), unserialize(CONFIG_BLOCKED_MIME))) {
 	        http_response_code(415);
         throw new Exception ('Extension type not allowed.');
             exit(0);
@@ -208,7 +204,6 @@ function refiles($files)
     foreach ($files as $file) {
         $f = new UploadedFile();
         $f->name = $file['name'];
-        $f->mime = $file['type'];
         $f->size = $file['size'];
         $f->tempfile = $file['tmp_name'];
         $f->error = $file['error'];
