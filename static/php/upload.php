@@ -24,8 +24,12 @@ function generateName($file)
     // We start at N retries, and --N until we give up
     $tries = UGUU_FILES_RETRIES;
     $length = UGUU_FILES_LENGTH;
-
-    $ext = $file->getExt();
+    //Get EXT
+    $ext = pathinfo($file->name, PATHINFO_EXTENSION);
+    //Get mime
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $type_mime = finfo_file($finfo, $file->tempfile);
+    finfo_close($finfo);
 
     // Check if extension is a double-dot extension and, if true, override $ext
     $revname = strrev($file->name);
@@ -57,7 +61,7 @@ function generateName($file)
         }
 
        //Check if mime is blacklisted
-       if (in_array($file->getMime(), unserialize(CONFIG_BLOCKED_MIME))) {
+       if (in_array($type_mime, unserialize(CONFIG_BLOCKED_MIME))) {
 	        http_response_code(415);
         throw new Exception ('Extension type not allowed.');
             exit(0);
@@ -101,7 +105,7 @@ function uploadFile($file)
     // Check if a file with the same hash and size (a file which is the same)
     // does already exist in the database; if it does, return the proper link
     // and data. PHP deletes the temporary file just uploaded automatically.
-    if(UGUU_DUPE){
+    if(UGUU_DUPE == 'true'){
     $q = $db->prepare('SELECT filename, COUNT(*) AS count FROM files WHERE hash = (:hash) '.
                       'AND size = (:size)');
     $q->bindValue(':hash', $file->getSha1(), PDO::PARAM_STR);
@@ -112,7 +116,7 @@ function uploadFile($file)
         return [
             'hash' => $file->getSha1(),
             'name' => $file->name,
-            'url' => UGUU_URL.rawurlencode($result['filename']),
+            'url' => POMF_URL.rawurlencode($result['filename']),
             'size' => $file->size,
         ];
     }
@@ -146,7 +150,7 @@ function uploadFile($file)
     }
 
     // Add it to the database
-    if(LOG_IP){
+    if(UGUU_LOG_IP == 'true'){
         $q = $db->prepare('INSERT INTO files (hash, originalname, filename, size, date, ip) VALUES (:hash, :orig, :name, :size, :date, :ip)');
     }else{
         $ip = '0';
@@ -204,6 +208,7 @@ function refiles($files)
     foreach ($files as $file) {
         $f = new UploadedFile();
         $f->name = $file['name'];
+        $f->mime = $file['type'];
         $f->size = $file['size'];
         $f->tempfile = $file['tmp_name'];
         $f->error = $file['error'];
